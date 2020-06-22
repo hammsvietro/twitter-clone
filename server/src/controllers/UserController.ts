@@ -12,9 +12,9 @@ const index = async (req: Request, res: Response) => {
 
 const store = async (req: Request, res: Response) => {
 
-  const { name }: IUser = req.body;
+  const { username, email, name, password }: IUser = req.body;
 
-  const sucess = await knex('users').insert({ name });
+  const sucess = await knex('users').insert({ name, username, email, password });
 
   if(!sucess) return res.status(500).send({ error: `couldn't add ${name}, try again later` });
 
