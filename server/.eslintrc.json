@@ -40,6 +40,7 @@
           "curly": "off",
           "implicit-arrow-linebreak": "off",
           "comma-dangle": "off",
+          "class-methods-use-this": "off",
           "arrow-body-style": "off",
           "dot-notation": "off",
           "padded-blocks": "off",
