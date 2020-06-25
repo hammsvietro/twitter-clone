@@ -10,11 +10,32 @@ class TweetController {
   async store(req: Request, res: Response) {
     const { id } = req.params;
 
+    const {
+      content,
+    }: ITweet = req.body;
+
+
     const user: IUser = await knex('users').where('id', id).first();
-    return res.status(200).send({ id: user.id, username: user.username });
+
+    if(!user.id) return res.send(404).send({ error: 'user not found' });
+
+
+
+    const tweet = await knex('tweets').insert({
+      userId: id,
+      content,
+    });
+    
+
+    return res.status(200).send(tweet); 
   }
 
+  async show(req: Request, res: Response) {
+  
+    const tweets: ITweet[] = await knex('tweets');
 
+    return res.status(200).send(tweets);
+  }
   
 }
 

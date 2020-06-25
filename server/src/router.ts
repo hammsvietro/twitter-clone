@@ -7,6 +7,7 @@ const router = Router();
 router.get('/users', UserController.index);
 router.post('/users', UserController.store);
 
-router.get('/tweet/:id', TweetController.store);
+router.post('/tweet/:id', TweetController.store);
+router.get('/tweet', TweetController.show);
 
 export default router;

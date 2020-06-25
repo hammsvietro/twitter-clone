@@ -1,5 +1,9 @@
 export interface IUser {
   id?: number;
+  
+  // followers (users - (n)followers(m) - user) 
+  // following (users - (n)following(m) - user) 
+
   name: string;
   username: string; // @
   email: string;

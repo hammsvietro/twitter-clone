@@ -11,6 +11,7 @@ export async function up(knex: Knex): Promise<any> {
     table.bigInteger('retweets').defaultTo(0);
     table.boolean('isMention');
     table.boolean('isReply');
+    table.date('time').defaultTo(knex.fn.now()).notNullable();
   });
 }
 
