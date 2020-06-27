@@ -6,9 +6,11 @@ const router = Router();
 
 router.get('/users', UserController.index);
 router.post('/users', UserController.store);
+router.post('/follow/:id/:followId', UserController.follow);
+
 
 router.post('/tweet/:id', TweetController.tweet);
-router.get('/tweet', TweetController.show);
+router.get('/tweet/:id', TweetController.show);
 router.get('/tweet/:userId/:tweetId', TweetController.index);
 router.post('/tweets/reply/:id', TweetController.reply);
 

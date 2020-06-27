@@ -48,20 +48,38 @@ class TweetController {
 
 
 
-    const tweet = await knex('tweets').insert({
+    await knex('tweets').insert({
       userId: id,
       content,
     });
-    
+  
 
-    return res.status(200).send(tweet); 
+    return res.status(200).send({ success: 'tweet successfuly posted' }); 
   }
 
   async show(req: Request, res: Response) {
-  
-    const tweets: ITweet[] = await knex('tweets');
 
-    return res.status(200).send(tweets);
+    /**
+     *  this method will be modified. this route must return pagination * 30 tweets from whom the user follows sorted by date
+     * 
+     * query strategy:
+     * 
+     *    - id : userId => req.params;
+     * 
+     *    - order by date (most recent)
+     * 
+     *    - pagination by tweet (get 30 in 30)
+     *  
+     *    - select * from tweets join 
+     *  
+     */
+    const { id } = req.params;
+
+    const following = await knex('following').where({ userId: id }).column('followId');
+
+    // const tweets: ITweet[] = await knex('tweets');
+
+    return res.status(200).send(following);
   }
 
   async index(req: Request, res: Response) {

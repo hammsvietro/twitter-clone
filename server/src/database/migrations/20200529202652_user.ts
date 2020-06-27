@@ -7,8 +7,10 @@ export async function up(knex: Knex): Promise<any> {
     table.string('name').notNullable();
     table.string('username').notNullable().unique();
     table.string('email').notNullable().unique();
-    table.string('password').unique();
+    table.string('password');
     table.string('profilePhoto').unique();
+    table.bigInteger('followers').notNullable().defaultTo(0);
+    table.bigInteger('following').notNullable().defaultTo(0);
     table.boolean('darkThemeActive').defaultTo(false).notNullable();
 
   });

@@ -45,6 +45,7 @@
           "dot-notation": "off",
           "padded-blocks": "off",
           "keyword-spacing": "off",
+          "no-param-reassign": "off",
           "no-console": "off",
           "quotes": [
             "error",
