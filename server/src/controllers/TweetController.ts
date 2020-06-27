@@ -8,12 +8,14 @@ class TweetController {
   async reply(req: Request, res: Response) {
     const { id } = req.params;
 
+    const trx = await knex.transaction();
+
     const {
       content,
       mainTweetId
     }: ITweet = req.body;
   
-    const sucess = await knex('tweets').insert({
+    const sucess = await trx('tweets').insert({
       userId: id,
       content,
       mainTweetId,
@@ -22,8 +24,12 @@ class TweetController {
 
     if(!sucess || !mainTweetId) return res.status(502).send({ error: 'cannot reply right now, try again later' });
 
-    const tweets = await knex('tweets').where('id', mainTweetId).orWhere('mainTweetId', mainTweetId);
+    const tweets = await trx('tweets').where('id', mainTweetId).orWhere('mainTweetId', mainTweetId);
 
+    await trx('tweets').where({ id: mainTweetId }).increment('replies', 1);
+
+
+    await trx.commit();
     return res.status(200).send(tweets);
 
   }

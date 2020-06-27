@@ -7,10 +7,11 @@ export async function up(knex: Knex): Promise<any> {
     table.integer('userId').notNullable().references('id').inTable('users');
     table.integer('mainTweetId').references('id').inTable('tweets');
     table.text('content').notNullable();
-    table.bigInteger('likes').defaultTo(0);
+    table.bigInteger('replies').defaultTo(0);
     table.bigInteger('retweets').defaultTo(0);
-    table.boolean('isMention');
-    table.boolean('isReply');
+    table.bigInteger('likes').defaultTo(0);
+    table.boolean('isMention').defaultTo(false).notNullable();
+    table.boolean('isReply').defaultTo(false).notNullable();
     table.date('time').defaultTo(knex.fn.now()).notNullable();
   });
 }
