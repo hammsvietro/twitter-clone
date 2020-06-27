@@ -18,12 +18,13 @@ export interface ITweet {
   // mainTweetId => FK {1:1} | Nullable
   // userId => FK {1:1}
   
-  
+  id?: number;
   content: string;
   media: string; // path
   likes: number; // int
   retweets: number;
   time: Date;
   isMention?: boolean;
-  isReply?:boolean;
+  isReply?: boolean;
+  mainTweetId?: number;
 }

@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable('following', (table) => {
     table.increments().primary();
     table.integer('userId').notNullable().references('id').inTable('users');
-    table.integer('followingId').notNullable().references('id').inTable('users');
+    table.integer('followId').notNullable().references('id').inTable('users');
   });
 }
 
