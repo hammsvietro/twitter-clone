@@ -3,6 +3,8 @@ import knex from '../database/config';
 
 import { IUser } from '../database/models';
 
+import isFollowing from '../utils/User/checkIfFollowing';
+
 class UserController {
   async index(req: Request, res: Response) {
   
@@ -25,16 +27,34 @@ class UserController {
 
   }
 
+  async unfollow(req: Request, res: Response) {
+    const { id, followId } = req.params;
+
+    
+    if(!await isFollowing(id, followId)) return res.status(403).send({ error: 'can\'t unfollow if not following' });
+
+    const trx = await knex.transaction();
+
+    await trx('following').where({
+      userId: id,
+      followId
+    }).del();
+
+    await trx('users').where({ id }).decrement('following', 1);
+    await trx('users').where({ id: followId }).decrement('followers', 1);
+
+    await trx.commit();
+
+    return res.status(200).send({ sucess: 'unfollowed user' });
+  }
+
   async follow(req: Request, res: Response) {
     const { id, followId } = req.params;
     
-    const trx = await knex.transaction();
     
-    const isAlreadyFollowing = await trx('following').where({
-      userId: id,
-      followId
-    });
-    if(isAlreadyFollowing.length !== 0) return res.status(403).send({ error: 'already following users' });
+    if(await isFollowing(id, followId)) return res.status(403).send({ error: 'already following users' });
+    
+    const trx = await knex.transaction();
 
     await trx('following').insert({
       userId: id,
