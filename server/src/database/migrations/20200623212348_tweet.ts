@@ -10,7 +10,6 @@ export async function up(knex: Knex): Promise<any> {
     table.bigInteger('replies').defaultTo(0);
     table.bigInteger('retweets').defaultTo(0);
     table.bigInteger('likes').defaultTo(0);
-    table.boolean('isMention').defaultTo(false).notNullable();
     table.boolean('isReply').defaultTo(false).notNullable();
     table.date('time').defaultTo(knex.fn.now()).notNullable();
   });

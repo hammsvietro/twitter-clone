@@ -9,7 +9,7 @@
 - [X] Database sctructure | migrations
 - [X] Follow/following logic 
 - [X] Post / reply
-- [ ] Retweet
+- [X] Retweet
 - [ ] Quote tweets
 - [ ] Get tweets route for dashboard
 - [ ] unit/integration tests

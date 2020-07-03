@@ -19,6 +19,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+      "func-names": "off",
       "import/prefer-default-export": "off",
       "@typescript-eslint/no-unused-vars": [
             2,

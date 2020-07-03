@@ -15,6 +15,7 @@ router.post('/tweet/:id', TweetController.tweet);
 router.get('/tweet/:id', TweetController.show);
 router.get('/tweet/:userId/:tweetId', TweetController.index);
 router.post('/tweets/reply/:id', TweetController.reply);
+router.post('/retweet/:userId/:tweetId', TweetController.retweet);
 
 router.get('/follow', async (req, res) => {
   const follow = await knex('following');

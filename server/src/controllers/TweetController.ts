@@ -59,27 +59,23 @@ class TweetController {
 
   async show(req: Request, res: Response) {
 
-    /**
-     *  this method will be modified. this route must return pagination * 30 tweets from whom the user follows sorted by date
-     * 
-     * query strategy:
-     * 
-     *    - id : userId => req.params;
-     * 
-     *    - order by date (most recent)
-     * 
-     *    - pagination by tweet (get 30 in 30)
-     *  
-     *    - select * from tweets join 
-     *  
-     */
+    
     const { id } = req.params;
 
-    const following = await knex('following').where({ userId: id }).column('followId');
+    const following = await knex('following').where({ userId: id }).pluck('followId');
 
-    // const tweets: ITweet[] = await knex('tweets');
+    const tweets = await knex('tweets')
+      .whereIn('tweets.userId', following)
+      .limit(50);
+    const retweets = await knex('retweets').whereIn('retweets.userId', following).select('retweets.isQuote', 'retweets.userId', 'retweets.tweetId')
+      .join('users', 'retweets.userId', 'users.id')
+      .select('users.name')
+      .join('tweets', 'retweets.tweetId', 'tweets.id')
+      .select('tweets.content', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time');
 
-    return res.status(200).send(following);
+      
+
+    return res.status(200).send(tweets.concat(retweets));
   }
 
   async index(req: Request, res: Response) {
@@ -98,6 +94,29 @@ class TweetController {
     await trx.commit();
 
     return res.status(200).send({ user, tweet, replies });
+  }
+
+  async retweet(req: Request, res: Response) {
+    const { userId, tweetId } = req.params;
+
+    const trx = await knex.transaction();
+
+
+    await trx('tweets').where({ id: tweetId }).increment('retweets', 1);
+
+    const tweet: any = await trx('tweets').where({ id: tweetId });
+
+    if(!tweet) return res.status(404).send({ error: 'tweet not found' });
+
+    await knex('retweets').insert({
+      tweetId,
+      userId
+    });
+
+    await trx.commit();
+
+    return res.status(200).send({ success: 'retweeted successfuly' });
+
   }
   
 }
