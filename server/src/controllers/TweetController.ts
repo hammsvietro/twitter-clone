@@ -67,11 +67,11 @@ class TweetController {
     const tweets = await knex('tweets')
       .whereIn('tweets.userId', following)
       .limit(50);
-    const retweets = await knex('retweets').whereIn('retweets.userId', following).select('retweets.isQuote', 'retweets.userId', 'retweets.tweetId')
-      .join('users', 'retweets.userId', 'users.id')
+    const retweets = await knex('retweets').whereIn('retweets.retweetUserId', following).select('retweets.isQuote', 'retweets.quote', 'retweets.retweetUserId')
+      .join('users', 'retweets.retweetUserId', 'users.id')
       .select('users.name')
       .join('tweets', 'retweets.tweetId', 'tweets.id')
-      .select('tweets.content', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time');
+      .select('tweets.id', 'tweets.content', 'tweets.userId', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time');
 
       
 
@@ -110,12 +110,37 @@ class TweetController {
 
     await knex('retweets').insert({
       tweetId,
-      userId
+      retweetUserId: userId
     });
 
     await trx.commit();
 
     return res.status(200).send({ success: 'retweeted successfuly' });
+
+  }
+
+  async quote(req: Request, res: Response) {
+
+    const { tweetId, userId } = req.params;
+    const { content } = req.body;
+
+    console.log(content);
+
+    const trx = await knex.transaction();
+
+    const tweet = await trx('tweets').where({ id: tweetId });
+    if(!tweet) return res.status(404).send({ error: 'tweet not found' });
+
+    await trx('retweets').insert({
+      tweetId,
+      retweetUserId: userId,
+      quote: content,
+      isQuote: true
+    });
+
+    trx.commit();
+
+    return res.status(200).send({ success: 'quote posted' });
 
   }
   

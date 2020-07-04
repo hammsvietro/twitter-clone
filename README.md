@@ -10,7 +10,7 @@
 - [X] Follow/following logic 
 - [X] Post / reply
 - [X] Retweet
-- [ ] Quote tweets
+- [X] Quote tweets
 - [ ] Get tweets route for dashboard
 - [ ] unit/integration tests
 
