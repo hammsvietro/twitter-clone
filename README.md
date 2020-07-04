@@ -12,6 +12,7 @@
 - [X] Retweet
 - [X] Quote tweets
 - [ ] Get tweets route for dashboard
+- [ ] Auth/Token route
 - [ ] unit/integration tests
 
 ## frontend
