@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import router from './router';
 
@@ -15,6 +16,7 @@ class App {
     this.middlewares();
     this.security();
     this.router();
+    this.uploads();
   }
 
   middlewares() {
@@ -23,6 +25,12 @@ class App {
 
   security() {
     this.app.use(cors());
+  }
+
+  uploads() {
+    this.app.use('/uploads', express.static(
+      path.resolve(__dirname, '..', 'uploads')
+    ));
   }
 
   router() {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import knex from '../database/config';
+import knex from '../config/knex';
 
 import sortTweetsByMostRecent from '../utils/Tweet/sortTweetsByMostRecent';
 
@@ -125,7 +125,6 @@ class TweetController {
     const { tweetId, userId } = req.params;
     const { content } = req.body;
 
-    console.log(content);
 
     const trx = await knex.transaction();
 

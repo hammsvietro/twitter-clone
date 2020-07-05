@@ -1,4 +1,4 @@
-import knex from '../../database/config';
+import knex from '../../config/knex';
 
 export default async function isFollowing(id: string, followId: string): Promise<boolean> {
   const idFollowingFollowId = await knex('following').where({

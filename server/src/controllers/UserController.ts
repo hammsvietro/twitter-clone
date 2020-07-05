@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import knex from '../database/config';
+import knex from '../config/knex';
 
 import { IUser } from '../database/models';
 

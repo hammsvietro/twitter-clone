@@ -1,3 +1,3 @@
-import { config } from './src/database/config/index';
+import { config } from './src/config/knex';
 
 module.exports = config;
