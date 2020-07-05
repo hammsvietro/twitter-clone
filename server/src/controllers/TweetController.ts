@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import knex from '../database/config';
 
+import sortTweetsByMostRecent from '../utils/Tweet/sortTweetsByMostRecent';
+
 import { IUser, ITweet } from '../database/models';
 
 class TweetController {
@@ -73,9 +75,9 @@ class TweetController {
       .join('tweets', 'retweets.tweetId', 'tweets.id')
       .select('tweets.id', 'tweets.content', 'tweets.userId', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time');
 
-      
+    const dashboardContent = sortTweetsByMostRecent(tweets.concat(retweets));
 
-    return res.status(200).send(tweets.concat(retweets));
+    return res.status(200).send(dashboardContent);
   }
 
   async index(req: Request, res: Response) {
@@ -100,13 +102,12 @@ class TweetController {
     const { userId, tweetId } = req.params;
 
     const trx = await knex.transaction();
-
-
-    await trx('tweets').where({ id: tweetId }).increment('retweets', 1);
-
+    
     const tweet: any = await trx('tweets').where({ id: tweetId });
-
-    if(!tweet) return res.status(404).send({ error: 'tweet not found' });
+    
+    if(tweet.length === 0) return res.status(404).send({ error: 'tweet not found' });
+    
+    await trx('tweets').where({ id: tweetId }).increment('retweets', 1);
 
     await knex('retweets').insert({
       tweetId,

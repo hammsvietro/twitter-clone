@@ -11,7 +11,9 @@ export async function up(knex: Knex): Promise<any> {
     table.bigInteger('retweets').defaultTo(0);
     table.bigInteger('likes').defaultTo(0);
     table.boolean('isReply').defaultTo(false).notNullable();
-    table.date('time').defaultTo(knex.fn.now()).notNullable();
+    table.dateTime('time').defaultTo(knex.fn.now()).notNullable();
+    table.string('attachment');
+    table.boolean('hasAttachment').notNullable().defaultTo(false);
   });
 }
 

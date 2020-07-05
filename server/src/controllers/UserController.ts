@@ -17,11 +17,12 @@ class UserController {
   async store(req: Request, res: Response) {
 
     const { username, email, name, password }: IUser = req.body;
-  
-    const sucess = await knex('users').insert({ name, username, email, password });
-  
-    if(!sucess) return res.status(500).send({ error: `couldn't add ${name}, try again later` });
-  
+    
+    const available = await knex('users').where({ username }).orWhere({ email });
+
+    if (available.length !== 0) return res.status(404).send({ error: 'username or email already taken' });
+
+    await knex('users').insert({ name, username, email, password });
   
     return res.status(200).send({ sucess: `${name} is now registered` });
 

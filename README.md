@@ -12,6 +12,7 @@
 - [X] Retweet
 - [X] Quote tweets
 - [ ] Get tweets route for dashboard
+- [ ] image uploading for profile photo and tweet attachments
 - [ ] unit/integration tests
 
 ## frontend
