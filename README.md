@@ -12,7 +12,11 @@
 - [X] Retweet
 - [X] Quote tweets
 - [ ] Get tweets route for dashboard
+<<<<<<< HEAD
 - [ ] image uploading for profile photo and tweet attachments
+=======
+- [ ] Auth/Token route
+>>>>>>> c83f07ec03cb1eae3f69849b1d06ca8f9fe2d70c
 - [ ] unit/integration tests
 
 ## frontend
