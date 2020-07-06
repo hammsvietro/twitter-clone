@@ -68,12 +68,16 @@ class TweetController {
 
     const tweets = await knex('tweets')
       .whereIn('tweets.userId', following)
+      .join('users', 'tweets.userId', 'users.id')
+      .select('tweets.*', 'users.profilePhotoThumbnail', 'users.name', 'users.username')
       .limit(50);
+
     const retweets = await knex('retweets').whereIn('retweets.retweetUserId', following).select('retweets.isQuote', 'retweets.quote', 'retweets.retweetUserId')
       .join('users', 'retweets.retweetUserId', 'users.id')
-      .select('users.name')
+      .select('users.profilePhotoThumbnail', 'users.name', 'users.username')
       .join('tweets', 'retweets.tweetId', 'tweets.id')
-      .select('tweets.id', 'tweets.content', 'tweets.userId', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time');
+      .select('tweets.id', 'tweets.content', 'tweets.userId', 'tweets.mainTweetId', 'tweets.replies', 'tweets.retweets', 'tweets.likes', 'tweets.isReply', 'tweets.time')
+      .limit(20);
 
     const dashboardContent = sortTweetsByMostRecent(tweets.concat(retweets));
 
@@ -141,6 +145,50 @@ class TweetController {
     trx.commit();
 
     return res.status(200).send({ success: 'quote posted' });
+
+  }
+
+  async like(req: Request, res: Response) {
+
+    const { userId, tweetId } = req.params;
+
+    const trx = await knex.transaction();
+
+    const user = await trx('users').where({ id: userId }).first();
+    if(!user) {
+      await trx.rollback();
+      return res.status(404).send({ error: 'user not found' });
+    } 
+
+
+    const tweet = await trx('tweets').where({ id: tweetId }).first();
+    if(!tweet) {
+      await trx.rollback();
+      return res.status(404).send({ error: 'tweet not found' });
+    } 
+      
+
+    const alreadyLiked = await trx('tweetLikes').where({ userId, tweetId }).first();
+    
+    if(alreadyLiked) {
+      await trx.rollback(); 
+      return res.status(403).send({ error: 'can\'t like a tweet twice' });
+    }
+
+    try {
+      
+      await trx('tweets').where({ id: tweetId }).increment('likes', 1);
+      await trx('tweetLikes').insert({ userId, tweetId });
+
+    } catch (error) {
+      await trx.rollback();
+      console.log(error);
+      return res.status(503).send({ error: 'could\'t like tweet, try again later' });
+    }
+
+    await trx.commit();
+
+    return res.status(200).send({ success: `liked tweet` });
 
   }
   

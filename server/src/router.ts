@@ -14,17 +14,17 @@ const upload = multer(multerConfig);
 
 const router = Router();
 
+/* USER ROUTER */
 router.get('/users', UserController.index);
 router.post('/users', UserController.store);
 router.post('/follow/:id/:followId', UserController.follow);
 router.post('/unfollow/:id/:followId', UserController.unfollow);
-
-// flow => save image, save thumbnail, save in DB new photos, send response, delete old pictures if is different than default photo. 
 router.put('/user/profilePhoto/:id', upload.single('image'), createProfileThumbnail, UserController.changeProfilePicture);
 
-
+/* TWEET ROUTES */
 router.post('/tweet/:id', TweetController.tweet);
 router.get('/tweet/:id', TweetController.show);
+router.put('/tweet/like/:userId/:tweetId', TweetController.like);
 router.get('/tweet/:userId/:tweetId', TweetController.index);
 router.post('/tweets/reply/:id', TweetController.reply);
 router.post('/retweet/:userId/:tweetId', TweetController.retweet);
