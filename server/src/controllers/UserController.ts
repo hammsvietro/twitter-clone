@@ -4,6 +4,10 @@ import knex from '../config/knex';
 
 import { IUser } from '../database/models';
 import isFollowing from '../utils/User/checkIfFollowing';
+import serializeUsers from '../utils/User/serializeUsers';
+import deleteFilesIfExists from '../utils/Storage/deleteFilesIfExists';
+
+const BASE_URL = `http://${process.env.SV_ADDRESS}:${process.env.SV_PORT}/uploads/`;
 
 dotenv.config();
 
@@ -13,9 +17,11 @@ class UserController {
   async index(req: Request, res: Response) {
   
     const users = await knex('users').select('id', 'name', 'username', 'email', 'profilePhoto', 'followers', 'following', 'profilePhoto', 'profilePhotoThumbnail');
-
     
-    return res.status(200).send(users);
+
+    const serializedUsers = serializeUsers(users, BASE_URL);
+    
+    return res.status(200).send(serializedUsers);
   }
 
   async store(req: Request, res: Response) {
@@ -79,24 +85,37 @@ class UserController {
     const { id } = req.params;
 
     const trx = await knex.transaction();
+    
+    
     const user = await trx('users').where({ id });
 
     if(user.length === 0) return res.status(404).send({ error: 'user not found' });
 
+    const oldPictures = [
+      user[0].profilePhoto,
+      user[0].profilePhotoThumbnail,
+    ];
+
+
     if(!req.file || !res.locals.thumbnailName) return res.status(403).send({ error: 'an error occoured uploading the photos' });
 
-    const baseUrl = `http://${process.env.SV_ADDRESS}:${process.env.SV_PORT}/uploads/`;
+    try {
+      await trx('users').update({
+        profilePhoto: req.file.filename,
+        profilePhotoThumbnail: res.locals.thumbnailName,
+      }).where({ id });
+      
+    } catch (error) {
 
-    await trx('users').update({
-      profilePhoto: `${baseUrl}${req.file.filename}`,
-      profilePhotoThumbnail: `${baseUrl}${res.locals.thumbnailName}`,
-    }).where({ id });
+      await trx.rollback();
+      return res.status(403).send({ error: 'couldn\'t update the profile picture' });
+    }
 
     await trx.commit();
 
-    
+    res.status(200).send({ success: 'profile picture updated' });
 
-    return res.status(200).send({ success: 'profile picture updated' });
+    return deleteFilesIfExists(oldPictures);
   }
 
 }

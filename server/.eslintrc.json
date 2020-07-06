@@ -19,6 +19,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+      "array-callback-return": "off",
       "max-len": "off",
       "newline-per-chained-call": "off",
       "func-names": "off",

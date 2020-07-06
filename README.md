@@ -11,8 +11,9 @@
 - [X] Post / reply
 - [X] Retweet
 - [X] Quote tweets
-- [ ] Get tweets route for dashboard
-- [ ] image uploading for profile photo and tweet attachments
+- [X] Get tweets route for dashboard
+- [X] Profile picture
+- [ ] Tweet attachments
 - [ ] Auth/Token route
 - [ ] unit/integration tests
 

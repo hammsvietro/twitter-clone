@@ -9,6 +9,7 @@ export interface IUser {
   email: string;
   password: string;
   profilePhoto?: string; // path
+  profilePhotoThumbnail?: string;
   darkThemeActive: boolean;  
 }
 
