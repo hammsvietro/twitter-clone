@@ -19,6 +19,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+      "max-len": "off",
       "newline-per-chained-call": "off",
       "func-names": "off",
       "import/prefer-default-export": "off",

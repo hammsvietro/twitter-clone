@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
+import dotenv from 'dotenv';
 import knex from '../config/knex';
 
 import { IUser } from '../database/models';
-
 import isFollowing from '../utils/User/checkIfFollowing';
 
+dotenv.config();
+
 class UserController {
+  
+  
   async index(req: Request, res: Response) {
   
-    const users = await knex('users').select('id', 'name', 'username', 'email', 'profilePhoto', 'followers', 'following');
+    const users = await knex('users').select('id', 'name', 'username', 'email', 'profilePhoto', 'followers', 'following', 'profilePhoto', 'profilePhotoThumbnail');
 
     
     return res.status(200).send(users);
@@ -69,6 +73,32 @@ class UserController {
 
     return res.status(200).send({ sucess: 'success' });
   }
+
+  async changeProfilePicture(req: Request, res: Response) {
+
+    const { id } = req.params;
+
+    const trx = await knex.transaction();
+    const user = await trx('users').where({ id });
+
+    if(user.length === 0) return res.status(404).send({ error: 'user not found' });
+
+    if(!req.file || !res.locals.thumbnailName) return res.status(403).send({ error: 'an error occoured uploading the photos' });
+
+    const baseUrl = `http://${process.env.SV_ADDRESS}:${process.env.SV_PORT}/uploads/`;
+
+    await trx('users').update({
+      profilePhoto: `${baseUrl}${req.file.filename}`,
+      profilePhotoThumbnail: `${baseUrl}${res.locals.thumbnailName}`,
+    }).where({ id });
+
+    await trx.commit();
+
+    
+
+    return res.status(200).send({ success: 'profile picture updated' });
+  }
+
 }
 
 export default new UserController();
